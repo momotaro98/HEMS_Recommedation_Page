@@ -1,0 +1,5 @@
+{{ user.username }} 様
+
+アカウントを確定するために以下のリンクのクリックをお願い致します。
+
+{{ url_for('auth.confirm', token=token, _external=True) }}

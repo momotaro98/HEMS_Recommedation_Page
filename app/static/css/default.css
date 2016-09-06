@@ -1,0 +1,24 @@
+.page-header{
+    background-color: #fff;
+    border-radius: 15px;
+}
+
+.col-md-4{
+    background-color: #fff;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    border-radius: 15px;
+    margin: 0 auto;
+}
+
+#org_container {
+     min-height: 100%;
+     height: 100%;
+     width: 95%;
+     margin: 0 auto;
+     overflow: hidden;
+     background-color: #ddd;
+     border-radius: 15px;
+     padding: 0 10px;
+     box-shadow: 0 0 3px rgba(0,0,0,0.5);
+ }

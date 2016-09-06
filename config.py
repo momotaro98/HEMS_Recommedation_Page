@@ -71,6 +71,7 @@ class HerokuConfig(ProductionConfig):
     SENDGRID_USE = True
     SENDGRID_USERNAME = os.environ.get('SENDGRID_USERNAME')
     SENDGRID_PASSWORD = os.environ.get('SENDGRID_PASSWORD')
+    SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
 
     @classmethod
     def init_app(cls, app):

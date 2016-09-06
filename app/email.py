@@ -27,6 +27,7 @@ def send_email(to, subject, template, **kwargs):
                                      app.config['SENDGRID_PASSWORD'])
         '''
         sg = sendgrid.SendGridAPIClient(apikey=app.config['SENDGRID_API_KEY'])
+        from_email = Email("test@example.com")
         subject = "Hello World from the SendGrid Python Library!"
         to_email = Email(to)
         content = Content("text/plain", body)

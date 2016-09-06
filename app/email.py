@@ -7,14 +7,14 @@ from sendgrid.helpers.mail import *
 from . import mail
 
 
-def send_async_email(app, msg, sg=None):
+def send_async_email(app, msg):
     with app.app_context():
         mail.send(msg)
 
 
-def send_async_email_with_sendgrid(app, sg):
+def send_async_email_with_sendgrid(app, sg, sg_mail):
     with app.app_context():
-        response = sg.client.mail.send.post(request_body=mail.get())
+        response = sg.client.mail.send.post(request_body=sg_mail.get())
 
 
 def send_email(to, subject, template, **kwargs):
@@ -38,8 +38,8 @@ def send_email(to, subject, template, **kwargs):
         subject = "Hello World from the SendGrid Python Library!"
         to_email = Email(to)
         content = Content("text/plain", body)
-        mail = Mail(from_email, subject, to_email, content)
-        thr = Thread(target=send_async_email_with_sendgrid, args=[app, sg])
+        sg_mail = Mail(from_email, subject, to_email, content)
+        thr = Thread(target=send_async_email_with_sendgrid, args=[app, sg, sg_mail])
 
     else:
         msg = Message(app.config['APP_MAIL_SUBJECT_PREFIX'] + ' ' + subject,

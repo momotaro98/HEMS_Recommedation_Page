@@ -11,6 +11,7 @@ class Config:
     MAIL_PORT = 587
     MAIL_USE_TLS = True
     MAIL_SSL = False
+    SENDGRID_USE = False
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME') or \
         'ochatarodev98@gmail.com'
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
@@ -67,6 +68,9 @@ class ProductionConfig(Config):
 
 class HerokuConfig(ProductionConfig):
     SSL_DISABLE = bool(os.environ.get('SSL_DISABLE'))
+    SENDGRID_USE = True
+    SENDGRID_USERNAME = os.environ.get('SENDGRID_USERNAME')
+    SENDGRID_PASSWORD = os.environ.get('SENDGRID_PASSWORD')
 
     @classmethod
     def init_app(cls, app):

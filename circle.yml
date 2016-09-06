@@ -6,4 +6,4 @@ machine:
 
 test:
   override:
-    - python manage.py test
+    - py.test

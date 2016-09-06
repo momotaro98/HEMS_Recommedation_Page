@@ -39,7 +39,8 @@ def send_email(to, subject, template, **kwargs):
         to_email = Email(to)
         content = Content("text/plain", body)
         sg_mail = Mail(from_email, subject, to_email, content)
-        thr = Thread(target=send_async_email_with_sendgrid, args=[app, sg, sg_mail])
+        thr = Thread(target=send_async_email_with_sendgrid,
+                     args=[app, sg, sg_mail])
 
     else:
         msg = Message(app.config['APP_MAIL_SUBJECT_PREFIX'] + ' ' + subject,

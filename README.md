@@ -1,12 +1,3 @@
-# momotaro-task-management
-## このアプリの目的
-1. 時間制限を設けて効率よく作業をこなす
-2. 実行したタスクのログを確認して達成感を得ながら次に活かす
-3. 目標を設定してタスク実行のモチベーションにする
+# HEMS_Recommendation_Page
 
-### このアプリの機能
-* タスク名・実行予定時間の設定
-* WEB上タイマー
-* 実行結果メール送信
-* 実行済みタスク可視化
-* タスク付加用の目標設定
+This is repo for momotaro98's master degree research. 

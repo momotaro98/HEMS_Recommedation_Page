@@ -1,5 +1,6 @@
 from flask import render_template, redirect, request, url_for, flash
-from flask.ext.login import login_user, logout_user, login_required, current_user
+from flask.ext.login import (login_user, logout_user,
+                             login_required, current_user)
 from flask.ext.wtf import Form
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import Required, Length, Email, Regexp, EqualTo
@@ -7,7 +8,7 @@ from wtforms import ValidationError
 from . import auth
 from .. import db
 from ..models import User
-from ..email import send_email # emailディレクトリは作成予定
+from ..email import send_email  # emailディレクトリは作成予定
 
 
 class LoginForm(Form):
@@ -20,7 +21,7 @@ class LoginForm(Form):
 
 class RegistrationForm(Form):
     email = StringField('Email', validators=[Required(), Length(1, 64),
-                                           Email()])
+                                             Email()])
     username = StringField('Username', validators=[
         Required(), Length(1, 64), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
                                           'Usernames must have only letters, '
@@ -94,7 +95,7 @@ def register():
         db.session.commit()
         token = user.generate_confirmation_token()
         send_email(user.email, 'Confirm Your Account',
-                'auth/email/confirm', user=user, token=token)
+                   'auth/email/confirm', user=user, token=token)
         flash('A confirmation email has beeen sent to you by email.')
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form)

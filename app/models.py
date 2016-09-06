@@ -5,6 +5,7 @@ from flask import current_app
 from flask.ext.login import UserMixin
 from . import db, login_manager
 
+
 class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
@@ -29,7 +30,9 @@ class User(UserMixin, db.Model):
     confirmed = db.Column(db.Boolean, default=False)
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
-    recommendation_page = db.relationship('RecommendationPage', backref='user', lazy='dynamic')
+    recommendation_page = db.relationship('RecommendationPage',
+                                          backref='user',
+                                          lazy='dynamic')
 
     # propertyでself.passwordを管理する
     @property
@@ -38,7 +41,7 @@ class User(UserMixin, db.Model):
         raise AttributeError('password is not a readable attribute')
 
     @password.setter
-    def password(self, password): # パスワードが設定されるとき(代入されるとき)に実行する
+    def password(self, password):  # パスワードが設定されるとき(代入されるとき)に実行する
         self.password_hash = generate_password_hash(password)
 
     def verify_password(self, password):
@@ -52,14 +55,14 @@ class User(UserMixin, db.Model):
     def confirm(self, token):
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
-            data = s.loads(token) # 与えられたトークンでシリアライザ-からロードができるか
+            data = s.loads(token)  # 与えられたトークンでシリアライザ-からロードができるか
             # トークンとIDは一対一のハッシュ関係
         except:
             return False
         if data.get('confirm') != self.id:
             return False
-        self.confirmed = True # rowインスタンスのconfirmedカラムをTrueにする
-        db.session.add(self) # confirmedされたことをデータベースへ更新する
+        self.confirmed = True  # rowインスタンスのconfirmedカラムをTrueにする
+        db.session.add(self)  # confirmedされたことをデータベースへ更新する
         return True
 
     def ping(self):

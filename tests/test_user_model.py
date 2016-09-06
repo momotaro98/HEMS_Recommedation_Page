@@ -23,7 +23,6 @@ class UserModelTestCase(unittest.TestCase):
         db.drop_all()
         self.app_context.pop()
 
-
     def test_password_setter(self):
         '''パスワードハッシュが生成されるかのテスト'''
         u = User(password='cat')
@@ -36,7 +35,7 @@ class UserModelTestCase(unittest.TestCase):
         '''
         u = User(password='cat')
         with self.assertRaises(AttributeError):
-            u.password # AttributeErrorが発生する
+            u.password  # AttributeErrorが発生する
 
     def test_password_verification(self):
         '''Userモデルのverify_passwordメソッドが正しく動作するかのテスト
@@ -58,8 +57,8 @@ class UserModelTestCase(unittest.TestCase):
         u = User(password='cat')
         db.session.add(u)
         db.session.commit()
-        token = u.generate_confirmation_token() # このトークンを含んだURLをメールで送信する
-        self.assertTrue(u.confirm(token)) # 認証チェック
+        token = u.generate_confirmation_token()  # このトークンを含んだURLをメールで送信する
+        self.assertTrue(u.confirm(token))  # 認証チェック
 
     def test_invalid_confirmation_token(self):
         '''異なったトークンで認証を正しくはじくかのテスト
@@ -89,9 +88,9 @@ class UserModelTestCase(unittest.TestCase):
         db.session.add(u)
         db.session.commit()
         self.assertTrue(
-                (datetime.utcnow() - u.member_since).total_seconds() < 3)
+            (datetime.utcnow() - u.member_since).total_seconds() < 3)
         self.assertTrue(
-                (datetime.utcnow() - u.last_seen).total_seconds() < 3)
+            (datetime.utcnow() - u.last_seen).total_seconds() < 3)
 
     def test_ping(self):
         '''User.ping()メソッドが正しく動作するかテスト

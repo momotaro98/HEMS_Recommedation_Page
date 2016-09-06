@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-#!/usr/bin/env python
 
 import sys
 import os
@@ -18,19 +17,22 @@ migrate = Migrate(app, db)
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.ERROR)
 
+
 # コマンドラインで実行する際にいちいちimportしないようにする処理
 def make_shell_context():
-    return dict(app=app, db=db, User=User, Role=Role, RecommendationPage=RecommendationPage)
+    return dict(app=app, db=db, User=User, Role=Role,
+                RecommendationPage=RecommendationPage)
 manager.add_command("shell", Shell(make_context=make_shell_context))
 manager.add_command("db", MigrateCommand)
 
 
-@manager.command # `python manage.py test` で実行できるようになるデコレータ
+@manager.command  # `python manage.py test` で実行できるようになるデコレータ
 def test():
     """Run the unit test."""
     import unittest
     tests = unittest.TestLoader().discover('tests')
     unittest.TextTestRunner(verbosity=2).run(tests)
+
 
 @manager.command
 def deploy():

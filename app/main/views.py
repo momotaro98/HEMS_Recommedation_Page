@@ -1,9 +1,11 @@
-from flask import request, render_template, session, redirect, url_for, current_app, abort, flash
+from flask import (request, render_template, session,
+                   redirect, url_for, current_app, abort, flash)
 from .. import db
 from ..models import User, RecommendationPage
 from . import main
 from flask.ext.wtf import Form
-from wtforms import StringField, SelectField, HiddenField, BooleanField, SubmitField, validators
+from wtforms import (StringField, SelectField, HiddenField,
+                     BooleanField, SubmitField, validators)
 from flask.ext.login import current_user, login_required
 import datetime
 

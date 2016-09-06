@@ -11,7 +11,8 @@ class Config:
     MAIL_PORT = 587
     MAIL_USE_TLS = True
     MAIL_SSL = False
-    MAIL_USERNAME = os.environ.get('MAIL_USERNAME') or 'ochatarodev98@gmail.com'
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME') or \
+        'ochatarodev98@gmail.com'
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     APP_MAIL_SUBJECT_PREFIX = 'レコメンドレポート'
     APP_MAIL_SENDER = '慶應義塾大学 池田伸太郎<ikeda@west.sd.keio.ac.jp>'
@@ -33,6 +34,7 @@ class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_RECOMMEND_DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'data-test.sqlite')
+
 
 class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_RECOMMEND_DATABASE_URL') or \
@@ -59,7 +61,7 @@ class ProductionConfig(Config):
             subject=cls.APP_MAIL_SUBJECT_PREFIX + ' Application Error',
             credentials=credentials,
             secure=secure)
-        mail_handler.setLevel(logging.ERROR) # メールを送るときのレベル設定
+        mail_handler.setLevel(logging.ERROR)  # メールを送るときのレベル設定
         app.logger.addHandler(mail_handler)
 
 

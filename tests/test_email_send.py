@@ -4,6 +4,7 @@ from flask import current_app
 from app import create_app, db
 from app.email import send_email
 
+
 class SendEmailTestCase(unittest.TestCase):
     def setUp(self):
         self.app = create_app('testing')
@@ -36,15 +37,14 @@ class SendEmailTestCase(unittest.TestCase):
         over_minute = (over_time % 3600) // 60
 
         send_email(SEND_TO, task_title, 'mail/task_done',
-                        task_title=task_title,
-                        done_datetime=done_datetime,
-                        set_hour=set_hour,
-                        set_minute=set_minute,
-                        start_hour=start_hour,
-                        start_minute=start_minute,
-                        serial_passed_hour=serial_passed_hour,
-                        serial_passed_minute=serial_passed_minute,
-                        over_time=over_time,
-                        over_hour=over_hour,
-                        over_minute=over_minute,
-                        )
+                   task_title=task_title,
+                   done_datetime=done_datetime,
+                   set_hour=set_hour,
+                   set_minute=set_minute,
+                   start_hour=start_hour,
+                   start_minute=start_minute,
+                   serial_passed_hour=serial_passed_hour,
+                   serial_passed_minute=serial_passed_minute,
+                   over_time=over_time,
+                   over_hour=over_hour,
+                   over_minute=over_minute)

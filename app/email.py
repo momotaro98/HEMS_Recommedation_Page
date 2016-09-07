@@ -23,19 +23,10 @@ def send_email(to, subject, template, **kwargs):
     html = render_template(template + '.html', **kwargs)
 
     if app.config['SENDGRID_USE']:
-        '''
-        sg = sendgrid.SendGridClient(app.config['SENDGRID_USERNAME'],
-                                     app.config['SENDGRID_PASSWORD'])
-        msg = sendgrid.Mail()
-        msg.add_to(to)
-        msg.set_subject(subject)
-        msg.set_text(body)
-        msg.set_from('Doe John')
-        '''
 
         sg = sendgrid.SendGridAPIClient(apikey=app.config['SENDGRID_API_KEY'])
-        from_email = Email("test@example.com")
-        subject = "Hello World from the SendGrid Python Library!"
+        from_email = Email("慶應義塾大学池田伸太郎<ikeda@west.sd.keio.ac.jp>")
+        subject = "慶應義塾大学レコメンドレポート " + subject
         to_email = Email(to)
         content = Content("text/plain", body)
         sg_mail = Mail(from_email, subject, to_email, content)

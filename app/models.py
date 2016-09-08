@@ -72,6 +72,9 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return '<User {0}>'.format(self.username)
 
+    def make_1week_RecommendationPage_rows(self):
+        pass
+
 
 class RecommendationPage(db.Model):
     __tablename__ = 'recommendationpage'
@@ -92,3 +95,43 @@ class RecommendationPage(db.Model):
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+
+class SettempGraph:
+    # define specification of this graph
+    horizontal_axis = [str(_) + "℃" for _ in range(18, 31)]
+
+    def __init__(self):
+        pass
+
+    def make_virtical_axis_values(self):
+        # ret = RecommendationPage.
+
+        # Return Example
+        return [0, 0, 0, 0, 0, 0, 0, 30, 60, 10, 0, 0, 0]
+
+
+class TotaltimeGraph:
+    # define specification of this graph
+
+    def __init__(self):
+        pass
+
+    def make_virtical_axis_values(self):
+
+        # Return Example
+        return [65, 59, 80, 81, 56, 55, 48]
+
+
+class PerhourGraph:
+    # define specification of this graph
+    horizontal_axis = [str(_) + ":00" for _ in range(24)]
+
+    def __init__(self):
+        pass
+
+    def make_virtical_axis_values(self):
+
+        # Return Example
+        return [90, 19, 13, 32, 2, 12, 50, 90, 19, 13, 32, 2, 12, 50,
+                90, 19, 13, 32, 2, 12, 50, 90, 19, 13, 32, 2, 12, 50]

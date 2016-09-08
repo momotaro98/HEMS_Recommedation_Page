@@ -76,10 +76,16 @@ class User(UserMixin, db.Model):
 class RecommendationPage(db.Model):
     __tablename__ = 'recommendationpage'
     id = db.Column(db.Integer, primary_key=True)
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-
-    # TODO: ページの要素を追加していく必要がある
+    timestamp = db.Column(db.DateTime, index=True)
+    on_off = db.Column(db.String(64))
+    operating = db.Column(db.String(64))
+    set_temperature = db.Column(db.Integer)
+    wind = db.Column(db.String(64))
+    indoor_temperature = db.Column(db.Float)
+    indoor_pressure = db.Column(db.Float)
+    indoor_humidity = db.Column(db.Float)
+    operate_ipaddress = db.Column(db.String(64))
 
 
 # 何かしらの処理の度にセッションにおけるユーザを再ロードするためのコールバック関数

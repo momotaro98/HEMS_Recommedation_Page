@@ -112,16 +112,26 @@ def load_user(user_id):
 
 class SettempGraph:
     # define specification of this graph
-    horizontal_axis = [str(_) + "℃" for _ in range(18, 31)]
+    min_temp = 18
+    max_temp = 30
+    horizontal_axis_range = range(min_temp, max_temp + 1)
+    horizontal_axis = [str(_) + "℃" for _ in horizontal_axis_range]
 
-    def __init__(self):
-        pass
+    def __init__(self, rows_iter):
+        self.rows_iter = rows_iter
 
     def make_virtical_axis_values(self):
-        # ret = RecommendationPage.
+        """
+        各設定温度の使用頻度のリストを返す 単位は%
 
         # Return Example
         return [0, 0, 0, 0, 0, 0, 0, 30, 60, 10, 0, 0, 0]
+        """
+        count_list = [0] * len(self.horizontal_axis_range)
+        for row in self.rows_iter:
+            count_list[row.set_temperature - self.min_temp] += 1
+        return [int((_ / sum(count_list) * 100)) for _ in count_list]
+
 
 
 class TotaltimeGraph:

@@ -31,9 +31,9 @@ def index():
 
     user = User.query.filter_by(username=current_user.username).\
         first_or_404()
-    user_1week_rows = user.make_1week_RecommendationPage_rows()
+    user_1week_rows_iter = user.make_1week_RecommendationPage_rows()
 
-    settemp_graph = SettempGraph()
+    settemp_graph = SettempGraph(user_1week_rows_iter)
     totaltime_graph = TotaltimeGraph()
     perhour_graph = PerhourGraph()
 

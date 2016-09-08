@@ -5,6 +5,8 @@ from flask import current_app
 from flask.ext.login import UserMixin
 from . import db, login_manager
 
+from .utils import make_week_top_and_bottom_day
+
 
 class Role(db.Model):
     __tablename__ = 'roles'
@@ -73,7 +75,18 @@ class User(UserMixin, db.Model):
         return '<User {0}>'.format(self.username)
 
     def make_1week_RecommendationPage_rows(self):
-        pass
+        top_datetime, bottom_datetime = make_week_top_and_bottom_day()
+
+        data_rows_iter = self.recommendation_page.\
+            filter(bottom_datetime < RecommendationPage.timestamp).\
+            filter(RecommendationPage.timestamp < top_datetime).\
+            order_by(RecommendationPage.timestamp.desc())
+        '''
+        # For Debugging
+        for row in data_rows_iter:
+            print("row.timestamp: ", row.timestamp)
+        '''
+        return data_rows_iter
 
 
 class RecommendationPage(db.Model):

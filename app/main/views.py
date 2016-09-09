@@ -37,9 +37,12 @@ def index():
     user_1week_rows_iter = user.\
         make_1week_RecommendationPage_rows(top_datetime, bottom_datetime)
 
-    # イテレータは一度使われると再利用できないのでリストにする
+    # イテレータをリストにする
     user_1week_rows_iter = list(user_1week_rows_iter)
-    # ↑これ合ってる?
+
+    # データが無いユーザに対してはデータが無いことを伝えるページに移す
+    if len(user_1week_rows_iter) == 0:
+        return redirect(url_for('main.data_not_prepaired'))
 
     settemp_graph = SettempGraph(user_1week_rows_iter)
     totaltime_graph = TotaltimeGraph(user_1week_rows_iter, top_datetime)
@@ -49,3 +52,8 @@ def index():
                            settemp_graph=settemp_graph,
                            totaltime_graph=totaltime_graph,
                            perhour_graph=perhour_graph)
+
+
+@main.route('/notyet')
+def data_not_prepaired():
+    return render_template('sorry.html')

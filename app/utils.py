@@ -29,14 +29,23 @@ def make_week_top_and_bottom_day(the_time=datetime.now()):
     return top_datetime, bottom_datetime
 
 
+def make_weekday_in_Japanese_from_num(num):
+    """
+    >>> make_weekday_in_Japanese_from_num(0)
+    '月'
+    >>> make_weekday_in_Japanese_from_num(6)
+    '日'
+    """
+    convert_list = ["月", "火", "水", "木", "金", "土", "日"]
+    return convert_list[num]
+
+
 def make_weekday_in_Japanese(the_time=datetime.now()):
     """
     >>> make_weekday_in_Japanese(datetime(2016, 4, 1))
     '金'
     """
-
-    convert_list = ["月", "火", "水", "木", "金", "土", "日"]
-    return convert_list[the_time.date().weekday()]
+    return make_weekday_in_Japanese_from_num(the_time.date().weekday())
 
 
 def back_1day_ago(the_time=datetime.now()):

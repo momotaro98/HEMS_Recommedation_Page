@@ -2,13 +2,17 @@
 
 {% block page_content %}
 
-<div id="header_text">
-<h2>こんにちは。{{ current_user.username }}様</h2>
-<h3>???月???日から???月???日の週におけるレコメンドレポートとなります。ご確認ください。</h3>
+<div class="panel panel-success" id="header_text">
+    <div class="panel-heading">
+        <h2>こんにちは。{{ current_user.username }}様</h2>
+    </div><!-- panel-heading -->
+    <div class="panel-body">
+        <h3>{{ bottom_datetime.month }}月{{ bottom_datetime.day }}日(日)から{{ top_datetime.month }}月{{ top_datetime.day }}日(土)の週におけるレコメンドレポートです。ご確認ください。</h3>
 
-<h3>また、今回実験協力としてレコメンドレポートを読んでいただいた後、以下のリンクからアンケートにご協力いただけますよう、よろしくお願い致します。</h3>
-<h3><a href="#">アンケート回答ページ</a></h3>
+        <h3>また、今回実験協力としてレコメンドレポートを読んでいただいた後、以下のリンクからアンケートにご協力いただけますよう、よろしくお願い致します。</h3>
+    </div><!-- panel-body -->
 </div><!-- #header_text -->
+<h3><a href="#">アンケート回答ページ</a></h3>
 
 <ul class="list-group">
     <li class="list-group-item">

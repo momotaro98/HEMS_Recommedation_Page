@@ -17,7 +17,7 @@ def make_week_top_and_bottom_day(the_time=datetime.now()):
     '''
     ago_day = weekday + 2 if 0 <= weekday <= 5 else 1
     date_recent_Satureday = the_time - timedelta(days=ago_day)
-    date_7day_from_rSd = date_recent_Satureday - timedelta(days=7)
+    date_7day_from_rSd = date_recent_Satureday - timedelta(days=6)
     top_datetime = datetime(date_recent_Satureday.year,
                             date_recent_Satureday.month,
                             date_recent_Satureday.day,
@@ -25,7 +25,7 @@ def make_week_top_and_bottom_day(the_time=datetime.now()):
     bottom_datetime = datetime(date_7day_from_rSd.year,
                                date_7day_from_rSd.month,
                                date_7day_from_rSd.day,
-                               23, 59, 59)
+                               0, 0, 0)
     return top_datetime, bottom_datetime
 
 

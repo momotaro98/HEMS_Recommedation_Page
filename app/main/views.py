@@ -49,6 +49,8 @@ def index():
     perhour_graph = PerhourGraph(user_1week_rows_iter)
 
     return render_template('index.html',
+                           top_datetime=top_datetime,
+                           bottom_datetime=bottom_datetime,
                            settemp_graph=settemp_graph,
                            totaltime_graph=totaltime_graph,
                            perhour_graph=perhour_graph)

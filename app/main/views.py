@@ -43,7 +43,7 @@ def index():
 
     settemp_graph = SettempGraph(user_1week_rows_iter)
     totaltime_graph = TotaltimeGraph(user_1week_rows_iter, top_datetime)
-    perhour_graph = PerhourGraph()
+    perhour_graph = PerhourGraph(user_1week_rows_iter)
 
     return render_template('index.html',
                            settemp_graph=settemp_graph,

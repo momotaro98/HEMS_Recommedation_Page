@@ -194,11 +194,41 @@ class PerhourGraph:
     # define specification of this graph
     horizontal_axis = [str(_) + ":00" for _ in range(24)]
 
-    def __init__(self):
-        pass
+    def __init__(self, rows_iter):
+        self.rows_iter = rows_iter
 
     def make_virtical_axis_values(self):
-
+        """
+        1週間分における時間当たりの使用率のリストを返す 単位は%
         # Return Example
         return [90, 19, 13, 32, 2, 12, 50, 90, 19, 13, 32, 2, 12, 50,
                 90, 19, 13, 32, 2, 12, 50, 90, 19, 13, 32, 2, 12, 50]
+        """
+        count_list = [0] * len(self.horizontal_axis)
+        on_operationg_flag = False
+        for row in self.rows_iter:
+            if row.on_off == "on" and not on_operationg_flag:
+                on_operationg_flag = True
+                on_timestamp = row.timestamp
+            elif row.on_off == "off" and on_operationg_flag:
+                on_operationg_flag = False
+                off_timestamp = row.timestamp
+
+                # on->off 期間のHourをカウントする
+                over_days = off_timestamp.day - on_timestamp.day
+                # 日をまたがないとき
+                if over_days == 0:
+                    for i in range(on_timestamp.hour, off_timestamp.hour + 1):
+                        count_list[i] += 1
+                # 日をまたぐとき
+                else:
+                    for i in range(on_timestamp.hour, 24):
+                        count_list[i] += 1
+                    for i in range(0, off_timestamp.hour + 1):
+                        count_list[i] += 1
+
+        if on_operationg_flag:
+            for i in range(on_timestamp.hour, 24):
+                count_list[i] += 1
+
+        return [int(((_ / 7) * 100)) for _ in count_list]

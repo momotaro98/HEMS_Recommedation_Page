@@ -3,6 +3,7 @@ from flask import (request, render_template, session,
 from .. import db
 from ..models import (User, RecommendationPage,
                       SettempGraph, TotaltimeGraph, PerhourGraph)
+from .. import utils
 from . import main
 from flask.ext.wtf import Form
 from wtforms import (StringField, SelectField, HiddenField,
@@ -29,12 +30,19 @@ def index():
     if not current_user.is_authenticated:
         return redirect(url_for('auth.login'))
 
+    top_datetime, bottom_datetime = utils.make_week_top_and_bottom_day()
+
     user = User.query.filter_by(username=current_user.username).\
         first_or_404()
-    user_1week_rows_iter = user.make_1week_RecommendationPage_rows()
+    user_1week_rows_iter = user.\
+        make_1week_RecommendationPage_rows(top_datetime, bottom_datetime)
+
+    # イテレータは一度使われると再利用できないのでリストにする
+    user_1week_rows_iter = list(user_1week_rows_iter)
+    # ↑これ合ってる?
 
     settemp_graph = SettempGraph(user_1week_rows_iter)
-    totaltime_graph = TotaltimeGraph()
+    totaltime_graph = TotaltimeGraph(user_1week_rows_iter, top_datetime)
     perhour_graph = PerhourGraph()
 
     return render_template('index.html',

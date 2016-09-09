@@ -27,3 +27,37 @@ def make_week_top_and_bottom_day(the_time=datetime.now()):
                                date_7day_from_rSd.day,
                                23, 59, 59)
     return top_datetime, bottom_datetime
+
+
+def make_weekday_in_Japanese(the_time=datetime.now()):
+    """
+    >>> make_weekday_in_Japanese(datetime(2016, 4, 1))
+    '金'
+    """
+
+    convert_list = ["月", "火", "水", "木", "金", "土", "日"]
+    return convert_list[the_time.date().weekday()]
+
+
+def back_1day_ago(the_time=datetime.now()):
+    """
+    >>> back_1day_ago(datetime(2016, 4, 1))
+    datetime.datetime(2016, 3, 31, 0, 0)
+    """
+    return the_time - timedelta(days=1)
+
+
+def make_days_last_timestamp(the_time=datetime.now()):
+    return datetime(the_time.year, the_time.month, the_time.day,
+                    23, 59, 59)
+
+
+def make_delta_hour(start_dt, end_dt=datetime.now()):
+    """
+    >>> start_dt = datetime(2016, 4, 1, 10, 40, 0)
+    >>> end_dt = datetime(2016, 4, 1, 15, 40, 0)
+    >>> make_delta_hour(start_dt, end_dt)
+    5.0
+    """
+    delta_seconds = (end_dt - start_dt).seconds
+    return round((delta_seconds // 60) / 60, 1)

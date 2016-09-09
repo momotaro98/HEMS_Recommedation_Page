@@ -5,7 +5,7 @@ from flask import current_app
 from flask.ext.login import UserMixin
 from . import db, login_manager
 
-from .utils import make_week_top_and_bottom_day
+from . import utils
 
 
 class Role(db.Model):
@@ -74,18 +74,11 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return '<User {0}>'.format(self.username)
 
-    def make_1week_RecommendationPage_rows(self):
-        top_datetime, bottom_datetime = make_week_top_and_bottom_day()
-
+    def make_1week_RecommendationPage_rows(self, top_dt, bottom_dt):
         data_rows_iter = self.recommendation_page.\
-            filter(bottom_datetime < RecommendationPage.timestamp).\
-            filter(RecommendationPage.timestamp < top_datetime).\
-            order_by(RecommendationPage.timestamp.desc())
-        '''
-        # For Debugging
-        for row in data_rows_iter:
-            print("row.timestamp: ", row.timestamp)
-        '''
+            filter(bottom_dt < RecommendationPage.timestamp).\
+            filter(RecommendationPage.timestamp < top_dt).\
+            order_by(RecommendationPage.timestamp.asc())
         return data_rows_iter
 
 
@@ -133,17 +126,68 @@ class SettempGraph:
         return [int((_ / sum(count_list) * 100)) for _ in count_list]
 
 
-
 class TotaltimeGraph:
-    # define specification of this graph
+    def __init__(self, rows_iter, top_datetime):
+        self.rows_iter = rows_iter
+        self.top_datetime = top_datetime
 
-    def __init__(self):
-        pass
-
-    def make_virtical_axis_values(self):
+    def make_horizontal_axis_values(self):
+        """
+        # 日付の横軸ラベルを返す
 
         # Return Example
+        # ["8月14日(日)", "8月15日(月)", "8月16日(火)",
+           "8月17日(水)", "8月18日(木)", "8月19日(金)",
+           "8月20日(土)"]
+        """
+        ret_list = []
+        dt = self.top_datetime
+        for _ in range(7):
+            weekday = utils.make_weekday_in_Japanese(dt)
+            insert_text = "{month}月{day}日({weekday})".\
+                format(month=dt.month, day=dt.day, weekday=weekday)
+            ret_list.insert(0, insert_text)
+            dt = utils.back_1day_ago(dt)
+        return ret_list
+
+    def make_virtical_axis_values(self):
+        """
+        # 1週間分の各日におけるエアコン総稼働時間のリストを返す 単位はHour
+
+        # Return Example
+        #       日  月  火  水  木  金  土
         return [65, 59, 80, 81, 56, 55, 48]
+        """
+
+        # 1番始めのonから次に来るoffまでの時間の合計時間を求める
+        # onの時の日にちをon->off間の日にちとする
+
+        ret_list = [0] * 7
+        on_operationg_flag = False
+        index = 0
+        for row in self.rows_iter:
+            if row.on_off == "on" and not on_operationg_flag:
+                on_operationg_flag = True
+
+                on_timestamp = row.timestamp
+                # examine on_timestamp's weekday
+                weekday = on_timestamp.date().weekday()
+                # convert weekday to ret_list index
+                index = weekday + 1 if 0 <= weekday <= 5 else 0
+
+            elif row.on_off == "off" and on_operationg_flag:
+                on_operationg_flag = False
+
+                off_timestamp = row.timestamp
+                ret_list[index] += utils.make_delta_hour(on_timestamp,
+                                                         off_timestamp)
+        # 1番最後の日にちにおいて23:59まで分を合計に追加する
+        if on_operationg_flag:
+            days_last_timestamp = utils.make_days_last_timestamp(on_timestamp)
+            ret_list[index] += utils.make_delta_hour(on_timestamp,
+                                                     days_last_timestamp)
+
+        return ret_list
 
 
 class PerhourGraph:

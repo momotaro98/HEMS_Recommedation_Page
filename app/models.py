@@ -112,8 +112,9 @@ class SettempGraph:
 
     def __init__(self, rows_iter):
         self.rows_iter = rows_iter
+        self.virtical_axis = self._make_virtical_axis_values()
 
-    def make_virtical_axis_values(self):
+    def _make_virtical_axis_values(self):
         """
         各設定温度の使用頻度のリストを返す 単位は%
 
@@ -125,13 +126,21 @@ class SettempGraph:
             count_list[row.set_temperature - self.min_temp] += 1
         return [int((_ / sum(count_list) * 100)) for _ in count_list]
 
+    def make_frequent_temperature(self):
+        return self.virtical_axis.index(max(self.virtical_axis)) + 18
+
+    def make_recommend_temperature(self):
+        return min(self.make_frequent_temperature() + 2, 28)
+
 
 class TotaltimeGraph:
     def __init__(self, rows_iter, top_datetime):
         self.rows_iter = rows_iter
         self.top_datetime = top_datetime
+        self.horizontal_axis = self._make_horizontal_axis_values()
+        self.virtical_axis = self._make_virtical_axis_values()
 
-    def make_horizontal_axis_values(self):
+    def _make_horizontal_axis_values(self):
         """
         # 日付の横軸ラベルを返す
 
@@ -150,7 +159,7 @@ class TotaltimeGraph:
             dt = utils.back_1day_ago(dt)
         return ret_list
 
-    def make_virtical_axis_values(self):
+    def _make_virtical_axis_values(self):
         """
         # 1週間分の各日におけるエアコン総稼働時間のリストを返す 単位はHour
 
@@ -189,6 +198,27 @@ class TotaltimeGraph:
 
         return ret_list
 
+    def make_top1_weekday(self):
+        top1_index = self.make_top_index_list(self.virtical_axis)[0]
+        return self.convert_num_to_weekday(top1_index)
+
+    def make_top2_weekday(self):
+        top2_index = self.make_top_index_list(self.virtical_axis)[1]
+        return self.convert_num_to_weekday(top2_index)
+
+    @staticmethod
+    def make_top_index_list(vlist):
+        copy_list = vlist[:]
+        top1_index = copy_list.index(max(copy_list))
+        copy_list[top1_index] = 0
+        top2_index = copy_list.index(max(copy_list))
+        return [top1_index, top2_index]
+
+    @staticmethod
+    def convert_num_to_weekday(num):
+        convert_list = ["日", "月", "火", "水", "木", "金", "土"]
+        return convert_list[num]
+
 
 class PerhourGraph:
     # define specification of this graph
@@ -196,8 +226,9 @@ class PerhourGraph:
 
     def __init__(self, rows_iter):
         self.rows_iter = rows_iter
+        self.virtical_axis = self._make_virtical_axis_values()
 
-    def make_virtical_axis_values(self):
+    def _make_virtical_axis_values(self):
         """
         1週間分における時間当たりの使用率のリストを返す 単位は%
         # Return Example
@@ -232,3 +263,7 @@ class PerhourGraph:
                 count_list[i] += 1
 
         return [int(((_ / 7) * 100)) for _ in count_list]
+
+    def find_a_certain_hour_value(self):
+        a_certain_hour_index = 14  # 14:00での利用率が欲しい
+        return self.virtical_axis[14]

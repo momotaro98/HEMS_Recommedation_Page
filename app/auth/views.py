@@ -70,7 +70,8 @@ def login():
         if user is not None and user.verify_password(form.password.data):
             login_user(user, form.remember_me.data)
             return redirect(request.args.get('next') or url_for('main.index'))
-        flash('Invalid username or password')
+        flash('Invalid email or password\n \
+              メールアドレスかパスワードが間違っています')
     return render_template('auth/login.html', form=form)
 
 
@@ -78,7 +79,8 @@ def login():
 @login_required
 def logout():
     logout_user()
-    flash('You have been logged out.')
+    flash('You have been logged out.\n \
+          ログアウトしました')
     return redirect(url_for('auth.login'))
 
 
@@ -96,7 +98,8 @@ def register():
         token = user.generate_confirmation_token()
         send_email(user.email, 'Confirm Your Account',
                    'auth/email/confirm', user=user, token=token)
-        flash('A confirmation email has beeen sent to you by email.')
+        flash('A confirmation email has beeen sent to you by email.\n \
+              認証用メールを送信しました')
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form)
 
@@ -108,9 +111,11 @@ def confirm(token):
     if current_user.confirmed:
         return redirect(url_for('main.index'))
     if current_user.confirm(token):
-        flash('You have confirmed your account. Thanks!')
+        flash('You have confirmed your account. Thanks!\n \
+              登録ありがとうございます。アカウントが認証されました。')
     else:
-        flash('The confirmation link is invalid or has expired.')
+        flash('The confirmation link is invalid or has expired.\n \
+              こちらの認証リンクは有効でないか期限が切れてしまっています')
     return redirect(url_for('main.index'))
 
 
@@ -120,5 +125,6 @@ def resend_confirmation():
     token = current_user.generate_confirmation_token()
     send_email(current_user.email, 'Confirm Your Account',
                'auth/email/confirm', user=current_user, token=token)
-    flash('A new confirmation email has been sent to you by email.')
+    flash('A new confirmation email has been sent to you by email.\n \
+          新しい確認メールを送信しました')
     return redirect(url_for('main.index'))

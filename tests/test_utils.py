@@ -9,9 +9,9 @@ class UtilsTestCase(unittest.TestCase):
         the_time = datetime(2016, 7, 13)  # Wednesday
         top, bottom = make_week_top_and_bottom_day(the_time)
         self.assertEqual(top.day, 9)  # We want latest Saturday
-        self.assertEqual(bottom.day, 2)  # a week ago
+        self.assertEqual(bottom.day, 3)  # 6 days ago
 
         the_time = datetime(2016, 7, 17)  # Sunday
         top, bottom = make_week_top_and_bottom_day(the_time)
         self.assertEqual(top.day, 16)  # We want latest Saturday
-        self.assertEqual(bottom.day, 9)  # a week ago
+        self.assertEqual(bottom.day, 10)  # 6 days ago

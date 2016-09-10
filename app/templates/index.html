@@ -2,69 +2,93 @@
 
 {% block page_content %}
 
+<div class="panel panel-success" id="header_text">
+    <div class="panel-heading">
+        <h2>こんにちは。{{ current_user.username }}様</h2>
+    </div><!-- panel-heading -->
+    <div class="panel-body">
+        <h3>{{ bottom_datetime.month }}月{{ bottom_datetime.day }}日(日)から{{ top_datetime.month }}月{{ top_datetime.day }}日(土)の週におけるレコメンドレポートです。ご確認ください。</h3>
 
-<div class="container-fluid">
-	<div class="row-fluid">
-		<div class="col-md-4">
-			<div class="panel panel-default recommend">
-                <div class="panel-heading">
-                    <h3>①エアコン設定温度変更レコメンド</h3>
-                </div><!-- .panel-heading -->
-                <div class="panel-body">
-                    <p>あなたのご家庭では、今週、設定温度{{ settemp_graph.make_frequent_temperature()|safe }}℃で最も多くエアコンが運転していました。</p>
+        <h3>また、今回実験協力としてレコメンドレポートを読んでいただいた後、以下のリンクからアンケートにご協力いただけますよう、よろしくお願い致します。</h3>
+    </div><!-- panel-body -->
+</div><!-- #header_text -->
+<h3><a href="#">アンケート回答ページ</a></h3>
 
-                    <p>設定温度をそれよりも高い{{ settemp_graph.make_recommend_temperature()|safe }}℃にしてみてはいかがでしょうか。</p>
-                    <p>平均として設定温度を2℃上げると月額約1,500円ほど電気代が安くなります。</p>
-                </div><!-- .panel-body -->
-			</div><!-- .recommend -->
-		</div><!-- .col -->
-		<div class="col-md-8 graph">
-			<canvas id="settemp"></canvas>
-		</div><!-- .col -->
-	</div><!-- .row -->
-</div><!-- .container -->
+<ul class="list-group">
+    <li class="list-group-item">
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="col-md-4">
+                    <div class="panel panel-default recommend">
+                        <div class="panel-heading">
+                            <h3>①エアコン設定温度変更レコメンド</h3>
+                        </div><!-- .panel-heading -->
+                        <div class="panel-body">
+                            <p>あなたのご家庭では、この週、設定温度{{ settemp_graph.make_frequent_temperature()|safe }}℃で最も多くエアコンが運転していました。</p>
 
-<div class="container-fluid">
-	<div class="row-fluid">
-		<div class="col-md-4">
-			<div class="panel panel-default recommend">
-                <div class="panel-heading">
-                    <h3>②エアコン使用時間の多い曜日における扇風機利用レコメンド</h3>
-                </div><!-- .panel-heading -->
-                <div class="panel-body">
-                    <p>あなたのご家庭では、今週、{{ totaltime_graph.make_top1_weekday()|safe }}曜日・{{ totaltime_graph.make_top2_weekday() }}曜日でのエアコン利用が多いです。</p>
-                    <p>これらの曜日で1時間だけエアコンを我慢し、扇風機を使用してみてはいかがでしょう。</p>
-                    <p>平均として1日1時間エアコン使用時間を減らすと月額約600円ほど電気代が安くなります。</p>
-                </div><!-- .panel-body -->
-			</div><!-- .recommend -->
-		</div><!-- .col -->
-		<div class="col-md-8 graph">
-			<canvas id="totaltime"></canvas>
-		</div><!-- .col -->
-	</div><!-- .row -->
-</div><!-- .container -->
+                            <p>設定温度をそれよりも高い{{ settemp_graph.make_recommend_temperature()|safe }}℃にしてみてはいかがでしょうか。</p>
+                            <p>平均として設定温度を2℃上げると月額約1,500円ほど電気代が安くなります。</p>
+                        </div><!-- .panel-body -->
+                    </div><!-- .recommend -->
+                </div><!-- .col -->
+                <div class="col-md-8 graph">
+                    <canvas id="settemp"></canvas>
+                </div><!-- .col -->
+            </div><!-- .row -->
+        </div><!-- .container -->
+    </li><!-- .list-group-item -->
 
-<div class="container-fluid">
-	<div class="row-fluid">
-		<div class="col-md-4">
-			<div class="panel panel-default recommend">
-                <div class="panel-heading">
-                    <h3>③日中エアコン使用変更レコメンド</h3>
-                </div><!-- .panel-heading -->
-                <div class="panel-body">
-                    <p>夏季の昼間の節電にご協力お願い致します！</p>
-                    <p>夏場での東京電力管内で電力ピークが発生しやすいのは14時台です。</p>
-                    <p></p>
-                    <p>あなたのご家庭では、今週、14時台でのエアコン利用率は{{ perhour_graph.find_a_certain_hour_value()|safe }}%でした。</p>
-                    <p>節電協力としてこの辺りの時間帯にエアコンを消してお買い物等外出してみてはいかがでしょう。</p>
-                </div><!-- .panel-body -->
-			</div><!-- .recommend -->
-		</div><!-- .col -->
-		<div class="col-md-8 graph">
-			<canvas id="perhour"></canvas>
-		</div><!-- .col -->
-	</div><!-- .row -->
-</div><!-- .container -->
+    <li class="list-group-item">
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="col-md-4">
+                    <div class="panel panel-default recommend">
+                        <div class="panel-heading">
+                            <h3>②エアコン使用時間の多い曜日における扇風機利用レコメンド</h3>
+                        </div><!-- .panel-heading -->
+                        <div class="panel-body">
+                            <p>あなたのご家庭では、この週、{{ totaltime_graph.make_top1_weekday()|safe }}曜日・{{ totaltime_graph.make_top2_weekday() }}曜日でのエアコン利用が多いです。</p>
+                            <p>これらの曜日で1時間だけエアコンを我慢し、扇風機を使用してみてはいかがでしょう。</p>
+                            <p>平均として1日1時間エアコン使用時間を減らすと月額約600円ほど電気代が安くなります。</p>
+                        </div><!-- .panel-body -->
+                    </div><!-- .recommend -->
+                </div><!-- .col -->
+                <div class="col-md-8 graph">
+                    <canvas id="totaltime"></canvas>
+                </div><!-- .col -->
+            </div><!-- .row -->
+        </div><!-- .container -->
+    </li><!-- .list-group-item -->
+
+    <li class="list-group-item">
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="col-md-4">
+                    <div class="panel panel-default recommend">
+                        <div class="panel-heading">
+                            <h3>③日中エアコン使用変更レコメンド</h3>
+                        </div><!-- .panel-heading -->
+                        <div class="panel-body">
+                            <p>夏季の昼間の節電にご協力お願い致します！</p>
+                            <p>夏場での東京電力管内で電力ピークが発生しやすいのは14時台です。</p>
+                            <p></p>
+                            <p>あなたのご家庭では、この週、14時台でのエアコン利用率は{{ perhour_graph.find_a_certain_hour_value()|safe }}%でした。</p>
+                            <p>節電協力としてこの辺りの時間帯にエアコンを消してお買い物等外出してみてはいかがでしょう。</p>
+                        </div><!-- .panel-body -->
+                    </div><!-- .recommend -->
+                </div><!-- .col -->
+                <div class="col-md-8 graph">
+                    <canvas id="perhour"></canvas>
+                </div><!-- .col -->
+            </div><!-- .row -->
+        </div><!-- .container -->
+    </li><!-- .list-group-item -->
+</ul><!-- .list-group -->
+
+<div id="footer_text">
+<h3>以下のリンクからアンケートにご協力いただけますよう、よろしくお願い致します。</h3>
+<h3><a href="#">アンケート回答ページ</a></h3>
+</div><!-- #footer_text -->
 
 {% block scripts %}
 {{ super() }}

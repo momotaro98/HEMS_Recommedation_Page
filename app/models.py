@@ -32,9 +32,8 @@ class User(UserMixin, db.Model):
     confirmed = db.Column(db.Boolean, default=False)
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
-    recommendation_page = db.relationship('RecommendationPage',
-                                          backref='user',
-                                          lazy='dynamic')
+    recommendation_page = db.relationship(
+        'RecommendationPage', backref='user', lazy='dynamic')
 
     # propertyでself.passwordを管理する
     @property
@@ -74,12 +73,18 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return '<User {0}>'.format(self.username)
 
-    def make_1week_RecommendationPage_rows(self, top_dt, bottom_dt):
+    def query_between_topdt_and_bottomdt(self, top_dt, bottom_dt):
         data_rows_iter = self.recommendation_page.\
             filter(bottom_dt < RecommendationPage.timestamp).\
             filter(RecommendationPage.timestamp < top_dt).\
             order_by(RecommendationPage.timestamp.asc())
         return data_rows_iter
+
+
+# 何かしらの処理の度にセッションにおけるユーザを再ロードするためのコールバック関数
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
 class RecommendationPage(db.Model):
@@ -97,18 +102,12 @@ class RecommendationPage(db.Model):
     operate_ipaddress = db.Column(db.String(64))
 
 
-# 何かしらの処理の度にセッションにおけるユーザを再ロードするためのコールバック関数
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
-
-
 class SettempGraph:
     # define specification of this graph
     min_temp = 18
     max_temp = 30
     horizontal_axis_range = range(min_temp, max_temp + 1)
-    horizontal_axis = [str(_) + "℃" for _ in horizontal_axis_range]
+    horizontal_axis = [str(t) + "℃" for t in horizontal_axis_range]
 
     def __init__(self, rows_iter):
         self.rows_iter = rows_iter
@@ -124,21 +123,35 @@ class SettempGraph:
         count_list = [0] * len(self.horizontal_axis_range)
         for row in self.rows_iter:
             count_list[row.set_temperature - self.min_temp] += 1
-        return [int((_ / sum(count_list) * 100)) for _ in count_list]
+        return [int((c / sum(count_list) * 100)) for c in count_list]
 
     def make_frequent_temperature(self):
+        """
+        self.virtical_axisのリストを利用して最も利用している設定温度を求める
+        """
         return self.virtical_axis.index(max(self.virtical_axis)) + 18
 
-    def make_recommend_temperature(self):
+    def make_recommend_temperature_summer(self):
+        '''
+        夏場におけるレコメンドレポートにおける推奨設定温度を求める
+        '''
         return min(self.make_frequent_temperature() + 2, 28)
+
+    def make_recommend_temperature_winter(self):
+        '''
+        冬場におけるレコメンドレポートにおける推奨設定温度を求める
+        '''
+        return max(self.make_frequent_temperature() - 2, 20)
 
 
 class TotaltimeGraph:
     def __init__(self, rows_iter, top_datetime):
         self.rows_iter = rows_iter
         self.top_datetime = top_datetime
+        self._weekday_to_index_list = self._make_weekday_to_index_list()
         self.horizontal_axis = self._make_horizontal_axis_values()
         self.virtical_axis = self._make_virtical_axis_values()
+        self.ave_hour, self.ave_min = self._make_ave_HourAndMin()
 
     def _make_horizontal_axis_values(self):
         """
@@ -159,13 +172,41 @@ class TotaltimeGraph:
             dt = utils.back_1day_ago(dt)
         return ret_list
 
+    def _make_weekday_to_index_list(self):
+        """
+        self.top_datetimeのweekdayが
+        ret_listの6番目のインデックスになるようにする
+        例
+        self.top_datetimeが水曜日(2)のとき
+         木 金 土 日 月 火 水
+        [X, X, X, X, X, X, X]
+        を'最終的に'返すのが目的なので
+         月 火 水 木 金 土 日
+        [4, 5, 6, 0, 1, 2, 3]
+        を作る
+
+        Usage:
+        weekdayが水曜日(2)のとき
+        index = self._weekday_to_index_list[weekday]
+        でindex == 6 となる
+
+        # >>> # self.top_datetime.date().weekday() == 2 のとき
+        # >>> self._make_weekday_to_index_list()
+        # [4, 5, 6, 0, 1, 2, 3]
+        """
+        ret_list = [7, 7, 7, 7, 7, 7, 7]
+        weekday = self.top_datetime.date().weekday()
+        for u_index in range(6, -1, -1):
+            ret_list[weekday] = u_index
+            weekday = weekday - 1 if weekday > 0 else 6
+        return ret_list
+
     def _make_virtical_axis_values(self):
         """
         # 1週間分の各日におけるエアコン総稼働時間のリストを返す 単位はHour
 
         # Return Example
-        #       日  月  火  水  木  金  土
-        return [65, 59, 80, 81, 56, 55, 48]
+        return [0.0, 2.3, 4.4, 2.9, 6.1, 4.2, 2.5]
         """
 
         # 1番始めのonから次に来るoffまでの時間の合計時間を求める
@@ -182,7 +223,7 @@ class TotaltimeGraph:
                 # examine on_timestamp's weekday
                 weekday = on_timestamp.date().weekday()
                 # convert weekday to ret_list index
-                index = weekday + 1 if 0 <= weekday <= 5 else 0
+                index = self._weekday_to_index_list[weekday]
 
             elif row.on_off == "off" and on_operationg_flag:
                 on_operationg_flag = False
@@ -190,6 +231,7 @@ class TotaltimeGraph:
                 off_timestamp = row.timestamp
                 ret_list[index] += utils.make_delta_hour(on_timestamp,
                                                          off_timestamp)
+
         # 1番最後の日にちにおいて23:59まで分を合計に追加する
         if on_operationg_flag:
             days_last_timestamp = utils.make_days_last_timestamp(on_timestamp)
@@ -219,16 +261,33 @@ class TotaltimeGraph:
         convert_list = ["日", "月", "火", "水", "木", "金", "土"]
         return convert_list[num]
 
+    def _make_ave_HourAndMin(self):
+        '''
+        self.virtical_axisのリストの平均をHourとMinで返す
+
+        # self.virtical_axis == [2.75, 2.75, 2.75, 2.75, 2.75, 2.75, 2.75]
+        # >>> self.make_ave_HourAndMin()
+        # (2, 45)
+        '''
+        # get ave of Hour.
+        ave_hour = sum(self.virtical_axis) / len(self.virtical_axis)
+        h, m = utils.convert_HourPoint_to_HourAndMin(ave_hour)
+        return h, m
+
 
 class PerhourGraph:
     # define specification of this graph
-    horizontal_axis = [str(_) + ":00" for _ in range(24)]
+    horizontal_axis = [str(hour) + ":00" for hour in range(24)]
 
     def __init__(self, rows_iter):
         self.rows_iter = rows_iter
         self.virtical_axis = self._make_virtical_axis_values()
 
     def _make_virtical_axis_values(self):
+        count_list = self._make_count_list()
+        return [int((c / 7) * 100) for c in count_list]
+
+    def _make_count_list(self):
         """
         1週間分における時間当たりの使用率のリストを返す 単位は%
         # Return Example
@@ -262,8 +321,60 @@ class PerhourGraph:
             for i in range(on_timestamp.hour, 24):
                 count_list[i] += 1
 
-        return [int(((_ / 7) * 100)) for _ in count_list]
+        return count_list
 
-    def find_a_certain_hour_value(self):
-        a_certain_hour_index = 14  # 14:00での利用率が欲しい
-        return self.virtical_axis[14]
+    def find_a_certain_hour_value(self, hour_index):
+        return self.virtical_axis[hour_index]
+
+
+class OneDayhourGraph(PerhourGraph):
+    def _make_virtical_axis_values(self):
+        count_list = self._make_count_list()
+        return count_list
+
+
+class OneDayTotaltimeGraph:
+    def __init__(self, rows_iter):
+        self.rows_iter = rows_iter
+        self.use_hour, self.use_min = self._make_total_time()
+
+    def _make_total_time(self):
+        total_time_min = 0
+        on_operationg_flag = False
+        for row in self.rows_iter:
+            if row.on_off == "on" and not on_operationg_flag:
+                on_operationg_flag = True
+                on_timestamp = row.timestamp
+            elif row.on_off == "off" and on_operationg_flag:
+                on_operationg_flag = False
+                off_timestamp = row.timestamp
+                total_time_min += utils.make_delta_min(
+                    on_timestamp, off_timestamp)
+        # 1番最後の日にちにおいて23:59まで分を合計に追加する
+        if on_operationg_flag:
+            days_last_timestamp = utils.make_days_last_timestamp(on_timestamp)
+            total_time_min += utils.make_delta_min(
+                on_timestamp, days_last_timestamp)
+        h, m = utils.convert_MinToHourAndMin(total_time_min)
+        return h, m
+
+
+class DateTimeForRecommend:
+    def __init__(self, target_datetime, top_datetime, bottom_datetime):
+        # target_datetime
+        self.target_datetime_month = target_datetime.month
+        self.target_datetime_day = target_datetime.day
+        self.target_datetime_yobi = \
+            utils.convert_num_to_weekday(target_datetime.date().weekday())
+
+        # top_datetime
+        self.top_datetime_month = top_datetime.month
+        self.top_datetime_day = top_datetime.day
+        self.top_datetime_yobi = \
+            utils.convert_num_to_weekday(top_datetime.date().weekday())
+
+        # bottom_datetime
+        self.bottom_datetime_month = bottom_datetime.month
+        self.bottom_datetime_day = bottom_datetime.day
+        self.bottom_datetime_yobi = \
+            utils.convert_num_to_weekday(bottom_datetime.date().weekday())

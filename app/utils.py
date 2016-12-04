@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from math import modf
 
 
 def make_dayPreviousDay_start_dt(the_time=datetime.now()):
@@ -142,11 +143,22 @@ def convert_num_to_weekday(num, lang="ja"):
     '''
     曜日インデックスを日本語に変換するメソッド
     >>> convert_num_to_weekday(2)
-    '火'
+    '水'
     >>> convert_num_to_weekday(2, 'en')
-    'Tue'
+    'Wed'
     '''
     convert_dict = {
         "ja": ["月", "火", "水", "木", "金", "土", "日"],
         "en": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]}
     return convert_dict[lang][num]
+
+
+def convert_HourPoint_to_HourAndMin(f_num):
+    """
+    >>> convert_HourPoint_to_HourAndMin(2.75)
+    (2, 45)
+    """
+    decimal, integer = modf(f_num)
+    hour = int(integer)
+    minu = int(decimal * 60)
+    return hour, minu

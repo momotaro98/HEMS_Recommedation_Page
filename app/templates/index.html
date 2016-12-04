@@ -7,9 +7,10 @@
         <h2>こんにちは。{{ current_user.username }}様</h2>
     </div><!-- panel-heading -->
     <div class="panel-body">
-        <h3>{{ dt_reco.bottom_datetime_month }}月{{ dt_reco.bottom_datetime_day }}日({{ dt_reco.bottom_datetime_yobi }})から{{ dt_reco.top_datetime_month }}月{{ dt_reco.top_datetime_day }}日({{ dt_reco.top_datetime_yobi }})の1週間分のデータによるレコメンドレポートです。ご確認ください。</h3>
+        <h3>{{ dt_reco.target_datetime_month }}月{{ dt_reco.target_datetime_day }}日({{ dt_reco.target_datetime_yobi }})のレコメンドレポートです。ご確認ください。</h3>
+        <h3>本レポートは、{{ dt_reco.bottom_datetime_month }}月{{ dt_reco.bottom_datetime_day }}日({{ dt_reco.bottom_datetime_yobi }})から{{ dt_reco.top_datetime_month }}月{{ dt_reco.top_datetime_day }}日({{ dt_reco.top_datetime_yobi }})の1週間分のデータにもとづいています。</h3>
 
-        <h3>また実験協力としてレコメンドレポートに目を通していただいた後、以下のリンクからアンケートにご協力いただけますよう、お願いいたします。</h3>
+        <h3>また、実験協力として本レポートに目を通していただいた後、以下のリンクからアンケートにご協力いただけますよう、お願いいたします。</h3>
     </div><!-- panel-body -->
 </div><!-- #header_text -->
 <h3><a href="https://docs.google.com/forms/d/e/1FAIpQLSey4LF3PwnmjwxMUNWxFz2WSk11IRPvF1r6lVoGpg8VsG9SUg/viewform">アンケート回答ページ</a></h3>
@@ -24,15 +25,19 @@
                             <h3>①エアコン設定温度変更レコメンド</h3>
                         </div><!-- .panel-heading -->
                         <div class="panel-body">
-                            <p>あなたのご家庭では、この1週間、設定温度<strong>{{ settemp_graph.make_frequent_temperature()|safe }}℃</strong>で最も多くエアコンが運転していました。</p>
                             {% if is_preday_existed %}
-                            <p>また、昨日は設定温度<strong>{{ oneday_settemp_graph.make_frequent_temperature()|safe }}℃</strong>で最も多くエアコンが運転していました。</p>
+                                <p>昨日は、設定温度 <strong>{{ oneday_settemp_graph.make_frequent_temperature()|safe }}℃</strong> で最も多くエアコンが運転していました。</p>
                             {% endif %}
                             {% if settemp_graph.make_frequent_temperature() > 20 %}
-                            <p>設定温度をそれよりも低い<strong>{{ settemp_graph.make_recommend_temperature_winter()|safe }}℃</strong>にしてみてはいかがでしょうか。(※ 環境省による冬場のエアコン推奨設定温度は<strong>20℃</strong>です)</p>
-                            <p>暖房の設定温度を2℃下げると平均的に月額約1,600円ほど電気代が安くなります。</p>
+                                <p>この1週間では、設定温度 <strong>{{ settemp_graph.make_frequent_temperature()|safe }}℃</strong> で最も多くエアコンが運転していました。</p>
+                                {% if is_preday_existed and oneday_settemp_graph.make_frequent_temperature() <= settemp_graph.make_recommend_temperature_winter() %}
+                                    <p>設定温度を引き続き <strong>{{ oneday_settemp_graph.make_frequent_temperature()|safe }}℃</strong> にするようお願いいたします。(※ 環境省による冬場のエアコン推奨設定温度は <strong>20℃</strong> です)</p>
+                                {% else %}
+                                    <p>設定温度を <strong>{{ settemp_graph.make_recommend_temperature_winter()|safe }}℃</strong> にしてみてはいかがでしょうか。(※ 環境省による冬場のエアコン推奨設定温度は <strong>20℃</strong> です)</p>
+                                    <p>暖房の設定温度を2℃下げると平均的に月額約1,600円ほど電気代が安くなります。</p>
+                                {% endif %}
                             {% else %}
-                            <p>現在の設定温度を維持していただくようお願いいたします。</p>
+                                <p>現在の設定温度を維持していただくようお願いいたします。</p>
                             {% endif %}
                         </div><!-- .panel-body -->
                     </div><!-- .recommend -->
@@ -53,14 +58,11 @@
                             <h3>②エアコン使用時間の多い曜日における扇風機利用レコメンド</h3>
                         </div><!-- .panel-heading -->
                         <div class="panel-body">
-                            <!--
-                            <p>あなたのご家庭では、この1週間、{{ totaltime_graph.make_top1_weekday()|safe }}曜日・{{ totaltime_graph.make_top2_weekday()|safe }}曜日でのエアコン利用が多いです。</p>
-                            -->
-                            <p>あなたのご家庭では、この1週間における1日あたりの平均エアコン運転時間は<strong>X時間X分</strong>でした。</p>
                             {% if is_preday_existed %}
-                            <p>また、昨日のエアコン運転時間は<strong>X時間X分</strong>でした。</p>
+                            <p>昨日のエアコン運転時間は <strong>{{ oneday_totaltime_graph.use_hour }}時間{{ oneday_totaltime_graph.use_min }}分</strong> でした。</p>
                             {% endif %}
-                            <p>昼間に日光を部屋に入れたり早く就寝するなどして普段よりも1時間だけエアコンの利用を控えてはいかがでしょう。</p>
+                            <p>この1週間では、1日あたりの平均エアコン運転時間は <strong>{{ totaltime_graph.ave_hour }}時間{{ totaltime_graph.ave_min }}分</strong> でした。</p>
+                            <p>昼間に日光を部屋に入れたり、早く就寝するなどして普段よりも1時間だけエアコンの利用を控えてはいかがでしょうか。</p>
                             <p>1日1時間エアコン使用時間を減らすと平均的に月額約600円ほど電気代が安くなります。</p>
                         </div><!-- .panel-body -->
                     </div><!-- .recommend -->
@@ -82,14 +84,18 @@
                         </div><!-- .panel-heading -->
                         <div class="panel-body">
                             <p>冬季の日中の節電にご協力お願い致します！</p>
-                            <p>冬場での東京電力管内で電力ピークが発生しやすいのは朝の10時台です。</p>
-                            <p>あなたのご家庭では、この1週間の内、10時におけるエアコン利用率は{{ perhour_graph.find_a_certain_hour_value(10)|safe }}%でした。</p>
+                            <p>冬場での東京電力管内で電力ピークが発生しやすいのは<strong>朝の10時台</strong>です。</p>
+                            <p>あなたのご家庭では、この1週間の内、10時におけるエアコン利用率は <strong>{{ perhour_graph.find_a_certain_hour_value(10)|safe }}%</strong> でした。</p>
                             {% if is_preday_existed %}
                             {% if oneday_perhour_graph.find_a_certain_hour_value(10) %}
                             <p>また、昨日は10時にエアコンが運転していました。</p>
                             {% endif %}
                             {% endif %}
-                            <p>節電協力としてこの辺りの時間帯にエアコンを消してお買い物等外出してみてはいかがでしょう。</p>
+                            {% if perhour_graph.find_a_certain_hour_value(10) > 0 %}
+                            <p>節電協力としてこの辺りの時間帯にエアコンを消してお買い物等外出してみてはいかがでしょうか。</p>
+                            {% else %}
+                            <p>引き続き10時台での利用を控えていただきますようお願いいたします。</p>
+                            {% endif %}
                         </div><!-- .panel-body -->
                     </div><!-- .recommend -->
                 </div><!-- .col -->

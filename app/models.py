@@ -32,9 +32,8 @@ class User(UserMixin, db.Model):
     confirmed = db.Column(db.Boolean, default=False)
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
-    recommendation_page = db.relationship('RecommendationPage',
-                                          backref='user',
-                                          lazy='dynamic')
+    recommendation_page = db.relationship(
+        'RecommendationPage', backref='user', lazy='dynamic')
 
     # propertyでself.passwordを管理する
     @property
@@ -152,6 +151,7 @@ class TotaltimeGraph:
         self._weekday_to_index_list = self._make_weekday_to_index_list()
         self.horizontal_axis = self._make_horizontal_axis_values()
         self.virtical_axis = self._make_virtical_axis_values()
+        self.ave_hour, self.ave_min = self._make_ave_HourAndMin()
 
     def _make_horizontal_axis_values(self):
         """
@@ -190,9 +190,9 @@ class TotaltimeGraph:
         index = self._weekday_to_index_list[weekday]
         でindex == 6 となる
 
-        >>> # self.top_datetime.date().weekday() == 2 のとき
-        >>> self._make_weekday_to_index_list()
-        [4, 5, 6, 0, 1, 2, 3]
+        # >>> # self.top_datetime.date().weekday() == 2 のとき
+        # >>> self._make_weekday_to_index_list()
+        # [4, 5, 6, 0, 1, 2, 3]
         """
         ret_list = [7, 7, 7, 7, 7, 7, 7]
         weekday = self.top_datetime.date().weekday()
@@ -204,10 +204,9 @@ class TotaltimeGraph:
     def _make_virtical_axis_values(self):
         """
         # 1週間分の各日におけるエアコン総稼働時間のリストを返す 単位はHour
-        # self.
 
         # Return Example
-        return [65, 59, 80, 81, 56, 55, 48]
+        return [0.0, 2.3, 4.4, 2.9, 6.1, 4.2, 2.5]
         """
 
         # 1番始めのonから次に来るoffまでの時間の合計時間を求める
@@ -230,17 +229,8 @@ class TotaltimeGraph:
                 on_operationg_flag = False
 
                 off_timestamp = row.timestamp
-                print('='*80)
-                print('on_timestamp', on_timestamp)
-                print('off_timestamp', off_timestamp)
-                plus = utils.make_delta_hour(on_timestamp, off_timestamp)
-                print('plus', plus)
-                print('index', index)
-                ret_list[index] += plus
-                '''
                 ret_list[index] += utils.make_delta_hour(on_timestamp,
                                                          off_timestamp)
-                '''
 
         # 1番最後の日にちにおいて23:59まで分を合計に追加する
         if on_operationg_flag:
@@ -270,6 +260,19 @@ class TotaltimeGraph:
     def convert_num_to_weekday(num):
         convert_list = ["日", "月", "火", "水", "木", "金", "土"]
         return convert_list[num]
+
+    def _make_ave_HourAndMin(self):
+        '''
+        self.virtical_axisのリストの平均をHourとMinで返す
+
+        # self.virtical_axis == [2.75, 2.75, 2.75, 2.75, 2.75, 2.75, 2.75]
+        # >>> self.make_ave_HourAndMin()
+        # (2, 45)
+        '''
+        # get ave of Hour.
+        ave_hour = sum(self.virtical_axis) / len(self.virtical_axis)
+        h, m = utils.convert_HourPoint_to_HourAndMin(ave_hour)
+        return h, m
 
 
 class PerhourGraph:
@@ -357,12 +360,20 @@ class OneDayTotaltimeGraph:
 
 
 class DateTimeForRecommend:
-    def __init__(self, top_datetime, bottom_datetime):
+    def __init__(self, target_datetime, top_datetime, bottom_datetime):
+        # target_datetime
+        self.target_datetime_month = target_datetime.month
+        self.target_datetime_day = target_datetime.day
+        self.target_datetime_yobi = \
+            utils.convert_num_to_weekday(target_datetime.date().weekday())
+
+        # top_datetime
         self.top_datetime_month = top_datetime.month
         self.top_datetime_day = top_datetime.day
         self.top_datetime_yobi = \
             utils.convert_num_to_weekday(top_datetime.date().weekday())
 
+        # bottom_datetime
         self.bottom_datetime_month = bottom_datetime.month
         self.bottom_datetime_day = bottom_datetime.day
         self.bottom_datetime_yobi = \

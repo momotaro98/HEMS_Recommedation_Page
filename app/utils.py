@@ -162,3 +162,13 @@ def convert_HourPoint_to_HourAndMin(f_num):
     hour = int(integer)
     minu = int(decimal * 60)
     return hour, minu
+
+
+def the_dt_last_dt(the_dt):
+    ret_dt = datetime(
+        the_dt.year,
+        the_dt.month,
+        the_dt.day,
+        23, 59, 59
+    )
+    return ret_dt

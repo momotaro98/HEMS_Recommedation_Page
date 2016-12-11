@@ -1,6 +1,9 @@
 alembic==0.8.4
+apipkg==1.4
 blinker==1.4
+decision-tree-for-hems-recommendations==0.0.1
 dominate==2.1.12
+execnet==1.4.1
 Flask==0.10.1
 Flask-Bootstrap==3.3.5.7
 Flask-Login==0.3.2
@@ -21,8 +24,13 @@ Werkzeug==0.10.4
 WTForms==2.1
 pep8==1.7.0
 py==1.4.31
+pyowm==2.5.0
 pytest==3.0.2
 pytest-cache==1.0
 pytest-pep8==1.0.6
 python-http-client==2.2.1
+scikit-learn==0.18.1
+scipy==0.18.1
 sendgrid==3.4.0
+tenkishocho==0.0.5
+visitor==0.1.2

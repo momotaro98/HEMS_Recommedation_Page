@@ -22,7 +22,6 @@ class Role(db.Model):
     # TODO lazyはRoleに関係するアイテムがロードされるタイミングを指定するものらしい
     # が、よく理解できていない
 
-
     def __repr__(self):
         return '<Role {0}>'.format(self.name)
 
@@ -447,11 +446,11 @@ class IsSettingTemp(IsRecommendation):
         target_season = self.ret_target_season()
         target_hour = self.ret_target_hour()
         self.rDT = SettingTempDT(
-                start_train_dt=start_train_dt,
-                end_train_dt=end_train_dt,
-                ac_logs_list=ac_logs_list,
-                target_season=target_season,
-                target_hour=target_hour,
+            start_train_dt=start_train_dt,
+            end_train_dt=end_train_dt,
+            ac_logs_list=ac_logs_list,
+            target_season=target_season,
+            target_hour=target_hour,
         )
         y_pred = self.rDT.ret_predicted_Y_int()
         return y_pred
@@ -470,11 +469,11 @@ class IsTotalUsage(IsRecommendation):
         target_season = self.ret_target_season()
         target_hour = self.ret_target_hour()
         self.rDT = TotalUsageDT(
-                start_train_dt=start_train_dt,
-                end_train_dt=end_train_dt,
-                ac_logs_list=ac_logs_list,
-                target_season=target_season,
-                target_hour=target_hour,
+            start_train_dt=start_train_dt,
+            end_train_dt=end_train_dt,
+            ac_logs_list=ac_logs_list,
+            target_season=target_season,
+            target_hour=target_hour,
         )
         y_pred = self.rDT.ret_predicted_Y_int()
         return y_pred
@@ -492,11 +491,11 @@ class IsChangeUsage(IsRecommendation):
         target_season = self.ret_target_season()
         target_hour = self.ret_target_hour()
         self.st_DT = ChangeUsageDT(
-                start_train_dt=start_train_dt,
-                end_train_dt=end_train_dt,
-                ac_logs_list=ac_logs_list,
-                target_season=target_season,
-                target_hour=target_hour,
+            start_train_dt=start_train_dt,
+            end_train_dt=end_train_dt,
+            ac_logs_list=ac_logs_list,
+            target_season=target_season,
+            target_hour=target_hour,
         )
         y_pred = self.st_DT.ret_predicted_Y_int()
         return y_pred

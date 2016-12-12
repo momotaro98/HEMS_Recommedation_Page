@@ -157,6 +157,7 @@ def index():
 def data_not_prepaired():
     return render_template('sorry.html')
 
+
 @main.route('/nocontents')
 def no_contents():
     return render_template('no_contents.html')

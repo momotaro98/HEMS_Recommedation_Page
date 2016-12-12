@@ -1,9 +1,14 @@
 from datetime import datetime
+from datetime import timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
 from flask.ext.login import UserMixin
 from . import db, login_manager
+
+from decision_tree_for_hems_recommendations import (
+    SettingTempDT, TotalUsageDT, ChangeUsageDT,
+)
 
 from . import utils
 
@@ -378,3 +383,123 @@ class DateTimeForRecommend:
         self.bottom_datetime_day = bottom_datetime.day
         self.bottom_datetime_yobi = \
             utils.convert_num_to_weekday(bottom_datetime.date().weekday())
+
+
+class IsRecommendation:
+    def __init__(self, user):
+        self.user = user
+        # startはコンテンツごとに異なる
+
+    def ret_pred_Y(self):
+        '''
+        # IsSettingTempの場合
+        ac_logs_list = self.ret_ac_logs_list()
+        target_season = self.ret_target_season()
+        target_hour = self.ret_target_hour()
+        self.rDT = SettingTempDT(
+                start_train_dt=self.start_train_dt,
+                end_train_dt=self.end_train_dt,
+                ac_logs_list=ac_logs_list,
+                target_season=target_season,
+                target_hour=target_hour,
+        )
+        y_pred = self.rDT.ret_predicted_Y_int()
+        return y_pred
+        '''
+        pass
+
+    def ret_start_train_dt(self):
+        start_train_dt = datetime(2016, 11, 16, 0, 0, 0)
+        return start_train_dt
+
+    def ret_end_train_dt(self):
+        end_train_dt = datetime.now() - timedelta(days=1)
+        # end_train_dt = datetime(2016, 12, 11, 23, 59, 59)
+        return end_train_dt
+
+    def ret_ac_logs_list(self):
+        top_datetime = utils.the_dt_last_dt(self.ret_end_train_dt())
+        bottom_datetime = self.ret_start_train_dt()
+        rows_iter = self.user.query_between_topdt_and_bottomdt(
+            top_datetime, bottom_datetime)
+        # to be list
+        ac_logs_list = list(rows_iter)
+        return ac_logs_list
+
+    def ret_target_season(self):
+        # target_season = 'spr'
+        # target_season = 'sum'
+        # target_season = 'fal'
+        target_season = 'win'
+        return target_season
+
+    def ret_target_hour(self):
+        target_hour = 10
+        return target_hour
+
+
+class IsSettingTemp(IsRecommendation):
+    def ret_pred_Y(self):
+        start_train_dt = self.ret_start_train_dt()
+        end_train_dt = self.ret_end_train_dt()
+        ac_logs_list = self.ret_ac_logs_list()
+        target_season = self.ret_target_season()
+        target_hour = self.ret_target_hour()
+        self.rDT = SettingTempDT(
+            start_train_dt=start_train_dt,
+            end_train_dt=end_train_dt,
+            ac_logs_list=ac_logs_list,
+            target_season=target_season,
+            target_hour=target_hour,
+        )
+        y_pred = self.rDT.ret_predicted_Y_int()
+        return y_pred
+
+    def ret_start_train_dt(self):
+        # start_train_dt = datetime(2016, 11, 16, 0, 0, 0)
+        start_train_dt = datetime.now() - timedelta(days=20)
+        return start_train_dt
+
+
+class IsTotalUsage(IsRecommendation):
+    def ret_pred_Y(self):
+        start_train_dt = self.ret_start_train_dt()
+        end_train_dt = self.ret_end_train_dt()
+        ac_logs_list = self.ret_ac_logs_list()
+        target_season = self.ret_target_season()
+        target_hour = self.ret_target_hour()
+        self.rDT = TotalUsageDT(
+            start_train_dt=start_train_dt,
+            end_train_dt=end_train_dt,
+            ac_logs_list=ac_logs_list,
+            target_season=target_season,
+            target_hour=target_hour,
+        )
+        y_pred = self.rDT.ret_predicted_Y_int()
+        return y_pred
+
+    def ret_start_train_dt(self):
+        start_train_dt = datetime(2016, 8, 16, 0, 0, 0)
+        return start_train_dt
+
+
+class IsChangeUsage(IsRecommendation):
+    def ret_pred_Y(self):
+        start_train_dt = self.ret_start_train_dt()
+        end_train_dt = self.ret_end_train_dt()
+        ac_logs_list = self.ret_ac_logs_list()
+        target_season = self.ret_target_season()
+        target_hour = self.ret_target_hour()
+        self.st_DT = ChangeUsageDT(
+            start_train_dt=start_train_dt,
+            end_train_dt=end_train_dt,
+            ac_logs_list=ac_logs_list,
+            target_season=target_season,
+            target_hour=target_hour,
+        )
+        y_pred = self.st_DT.ret_predicted_Y_int()
+        return y_pred
+
+    def ret_start_train_dt(self):
+        start_train_dt = datetime(2016, 8, 16, 0, 0, 0)
+        return start_train_dt

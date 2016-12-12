@@ -13,16 +13,32 @@
         <h3>また、実験協力として本レポートに目を通していただいた後、以下のリンクからアンケートにご協力いただけますよう、お願いいたします。</h3>
     </div><!-- panel-body -->
 </div><!-- #header_text -->
+
+{% if settemp_graph and totaltime_graph and perhour_graph %}
 <h3><a href="https://docs.google.com/forms/d/e/1FAIpQLSdG66LXp5RB7zV6xkJYlWxAqqeCaUXdZgHu3-k-WN4YiXHmDg/viewform">アンケート回答ページ</a></h3>
+{% elif settemp_graph and totaltime_graph %}
+<h3><a href="https://docs.google.com/forms/d/e/1FAIpQLSdl310w5ZqfaNOCTtf1A7EfwBh5Q3cQoBfzkLwaLqWrLnzKzg/viewform">アンケート回答ページ</a></h3>
+{% elif settemp_graph and perhour_graph %}
+<h3><a href="https://docs.google.com/forms/d/e/1FAIpQLSfjHIJLNGnRvQVkf7yxRSiXM2O-iECK_JH11IFa9E-4PrK_qQ/viewform">アンケート回答ページ</a></h3>
+{% elif totaltime_graph and perhour_graph %}
+<h3><a href="https://docs.google.com/forms/d/e/1FAIpQLSfs9d_3OzWt1X53bDa7pO4VDOG5A1mU0Lewxhrg2sJBPDZslw/viewform">アンケート回答ページ</a></h3>
+{% elif settemp_graph %}
+<h3><a href="https://docs.google.com/forms/d/e/1FAIpQLSfOr-Z-g-jG4D0gvTL2J9KOO2NFT_TI56LiJgIcpRv5V-9Tow/viewform">アンケート回答ページ</a></h3>
+{% elif totaltime_graph %}
+<h3><a href="https://docs.google.com/forms/d/e/1FAIpQLSfGCw5q2jWXYoDU3OHmKq01k5kKeLhvdx6aSQDthEHDIqArLA/viewform">アンケート回答ページ</a></h3>
+{% elif perhour_graph %}
+<h3><a href="https://docs.google.com/forms/d/e/1FAIpQLScn_2FaWTaOndTGSP17_tgi6GD3gPdWoa33GsORveIWe8hkQA/viewform">アンケート回答ページ</a></h3>
+{% endif %}
 
 <ul class="list-group">
+    {% if settemp_graph %}
     <li class="list-group-item">
         <div class="container-fluid">
             <div class="row-fluid">
                 <div class="col-md-4">
                     <div class="panel panel-default recommend">
                         <div class="panel-heading">
-                            <h3>①エアコン設定温度変更レコメンド</h3>
+                            <h3>エアコン設定温度変更レコメンド</h3>
                         </div><!-- .panel-heading -->
                         <div class="panel-body">
                             {% if is_preday_existed %}
@@ -48,14 +64,16 @@
             </div><!-- .row -->
         </div><!-- .container -->
     </li><!-- .list-group-item -->
+    {% endif %}
 
+    {% if totaltime_graph %}
     <li class="list-group-item">
         <div class="container-fluid">
             <div class="row-fluid">
                 <div class="col-md-4">
                     <div class="panel panel-default recommend">
                         <div class="panel-heading">
-                            <h3>②エアコン使用時間削減レコメンド</h3>
+                            <h3>エアコン使用時間削減レコメンド</h3>
                         </div><!-- .panel-heading -->
                         <div class="panel-body">
                             {% if is_preday_existed %}
@@ -73,14 +91,16 @@
             </div><!-- .row -->
         </div><!-- .container -->
     </li><!-- .list-group-item -->
+    {% endif %}
 
+    {% if perhour_graph %}
     <li class="list-group-item">
         <div class="container-fluid">
             <div class="row-fluid">
                 <div class="col-md-4">
                     <div class="panel panel-default recommend">
                         <div class="panel-heading">
-                            <h3>③日中エアコン使用変更レコメンド</h3>
+                            <h3>日中エアコン使用変更レコメンド</h3>
                         </div><!-- .panel-heading -->
                         <div class="panel-body">
                             <p>冬季の日中の節電にご協力お願い致します！</p>
@@ -105,6 +125,7 @@
             </div><!-- .row -->
         </div><!-- .container -->
     </li><!-- .list-group-item -->
+    {% endif %}
 </ul><!-- .list-group -->
 
 <div id="footer_text">
@@ -126,26 +147,33 @@
 {{ super() }}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.min.js"></script>
 <script>
+    {% if settemp_graph %}
     // 1つ目のグラフ用データ 設定温度
 	// var settemp_lables = ["18℃", "19℃", "20℃", "21℃", "22℃", "23℃", "24℃", "25℃", "26℃", "27℃", "28℃", "29℃", "30℃"];
     var settemp_lables = {{ settemp_graph.horizontal_axis|safe }};
     // var settemp_data = [0, 0, 0, 0, 0, 0, 0, 30, 60, 10, 0, 0, 0];
     var settemp_data = {{ settemp_graph.virtical_axis|safe }};
+    {% endif %}
 
+    {% if totaltime_graph %}
     // 2つ目のグラフ用データ 総稼働時間データ
 	//var totaltime_lables = ["8月14日(水)", "8月15日(木)", "8月16日(金)", "8月17日(土)", "8月18日(日)", "8月19日(月)", "8月20日(火)"];
     var totaltime_lables = {{ totaltime_graph.horizontal_axis |safe}};
     // var totaltime_data = [65, 59, 80, 81, 56, 55, 48];
     var totaltime_data = {{ totaltime_graph.virtical_axis|safe }};
+    {% endif %}
 
+    {% if perhour_graph %}
     // 3つ目のグラフ用データ 単位時間毎利用率データ
     // var perhour_lables = ["0:00", "1:00", "2:00", "3:00", "4:00", "5:00", "6:00", "7:00", "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00",];
     var perhour_lables = {{ perhour_graph.horizontal_axis|safe }};
     // var perhour_data = [90, 19, 13, 32, 2, 12, 50, 90, 19, 13, 32, 2, 12, 50, 90, 19, 13, 32, 2, 12, 50, 90, 19, 13, 32, 2, 12, 50];
     var perhour_data = {{ perhour_graph.virtical_axis|safe }};
-
+    {% endif %}
 </script>
-<script src="/static/js/graphs.js"></script>
+<script src="/static/js/settemp_graph.js"></script>
+<script src="/static/js/totaltime_graph.js"></script>
+<script src="/static/js/perhour_graph.js"></script>
 {% endblock %}
 
 {% endblock %}

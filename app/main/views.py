@@ -4,7 +4,8 @@ from .. import db
 from ..models import (User, RecommendationPage,
                       SettempGraph, TotaltimeGraph, PerhourGraph,
                       OneDayhourGraph, OneDayTotaltimeGraph,
-                      DateTimeForRecommend)
+                      DateTimeForRecommend,
+                      IsSettingTemp, IsTotalUsage, IsChangeUsage)
 from .. import utils
 from . import main
 from flask.ext.wtf import Form
@@ -36,6 +37,20 @@ def index():
     user = User.query.filter_by(
         username=current_user.username).first_or_404()
 
+    # +++ コンテンツ判断処理 Start +++
+    is_deli_st = IsSettingTemp(user).ret_pred_Y()
+    is_deli_tu = IsTotalUsage(user).ret_pred_Y()
+    is_deli_cu = IsChangeUsage(user).ret_pred_Y()
+    # +++ コンテンツ判断処理 End +++
+    '''
+    # For Debug
+    print('is_deli_st', is_deli_st)
+    print('is_deli_tu', is_deli_tu)
+    print('is_deli_cu', is_deli_cu)
+    '''
+    if not is_deli_st and not is_deli_tu and not is_deli_cu:
+        return redirect(url_for('main.no_contents'))
+
     # 基準の日にち
     # target_datetime = datetime.datetime(2016, 10, 15)
     target_datetime = datetime.datetime.now()
@@ -55,7 +70,6 @@ def index():
     # そこから1週間前のdatetime(bottom)の2つを返す関数
     top_datetime, bottom_datetime = \
         utils.make_week_topPreviousDay_and_bottom_day(target_datetime)
-
     # クエリ発行、1週間分のデータを取得
     user_1week_rows_iter = user.query_between_topdt_and_bottomdt(
         top_datetime, bottom_datetime)
@@ -64,20 +78,17 @@ def index():
     # データが無いユーザに対してはデータが無いことを伝えるページに移す
     if len(user_1week_rows_list) <= 0:
         return redirect(url_for('main.data_not_prepaired'))
-
     # $$$$$ 1週間分データの処理 End $$$$$
 
     # $$$$$ 1日分データの処理 Start $$$$$
     # top_dt, bottom_dtを取得
     oneday_top_datetime, oneday_bottom_datetime = \
         utils.make_dayPreviousDay_start_dt(target_datetime)
-
     '''
     # For Debug
     print('top_datetime', top_datetime)
     print('oneday_top_datetime', oneday_top_datetime)
     '''
-
     # クエリ発行、指定日の前日分のデータを取得
     user_1day_rows_iter = user.query_between_topdt_and_bottomdt(
         oneday_top_datetime, oneday_bottom_datetime)
@@ -89,9 +100,12 @@ def index():
 
     # 各レコメンドコンテンツのインスタンスを取得
     # instances for 1 week
-    settemp_graph = SettempGraph(user_1week_rows_list)
-    totaltime_graph = TotaltimeGraph(user_1week_rows_list, top_datetime)
-    perhour_graph = PerhourGraph(user_1week_rows_list)
+    settemp_graph = SettempGraph(user_1week_rows_list) \
+        if is_deli_st else None
+    totaltime_graph = TotaltimeGraph(user_1week_rows_list, top_datetime) \
+        if is_deli_tu else None
+    perhour_graph = PerhourGraph(user_1week_rows_list) \
+        if is_deli_cu else None
 
     '''
     # For Debug
@@ -101,11 +115,11 @@ def index():
 
     # instances for 1 day
     oneday_settemp_graph = SettempGraph(user_1day_rows_list) \
-        if is_preday_existed else None
+        if is_preday_existed and is_deli_st else None
     oneday_totaltime_graph = OneDayTotaltimeGraph(user_1day_rows_list) \
-        if is_preday_existed else None
+        if is_preday_existed and is_deli_tu else None
     oneday_perhour_graph = OneDayhourGraph(user_1day_rows_list) \
-        if is_preday_existed else None
+        if is_preday_existed and is_deli_cu else None
 
     '''
     # For Debug
@@ -142,3 +156,8 @@ def index():
 @main.route('/notyet')
 def data_not_prepaired():
     return render_template('sorry.html')
+
+
+@main.route('/nocontents')
+def no_contents():
+    return render_template('no_contents.html')

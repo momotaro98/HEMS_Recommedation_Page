@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block page_content %}
+
+<div class="panel panel-success" id="header_text">
+    <div class="panel-heading">
+        <h2>こんにちは。{{ current_user.username }}様</h2>
+    </div><!-- panel-heading -->
+    <div class="panel-body">
+        <h3>本日分のレコメンド内容はありません。</h3>
+        <h3>また、アンケート回答も不要です。<h3>
+    </div><!-- panel-body -->
+</div><!-- #header_text -->
+
+{% endblock %}

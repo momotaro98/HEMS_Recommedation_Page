@@ -13,7 +13,22 @@
         <h3>また、実験協力として本レポートに目を通していただいた後、以下のリンクからアンケートにご協力いただけますよう、お願いいたします。</h3>
     </div><!-- panel-body -->
 </div><!-- #header_text -->
+
+{% if settemp_graph and totaltime_graph and perhour_graph %}
 <h3><a href="https://docs.google.com/forms/d/e/1FAIpQLSdG66LXp5RB7zV6xkJYlWxAqqeCaUXdZgHu3-k-WN4YiXHmDg/viewform">アンケート回答ページ</a></h3>
+{% elif settemp_graph and totaltime_graph %}
+<h3><a href="https://docs.google.com/forms/d/e/1FAIpQLSdl310w5ZqfaNOCTtf1A7EfwBh5Q3cQoBfzkLwaLqWrLnzKzg/viewform">アンケート回答ページ</a></h3>
+{% elif settemp_graph and perhour_graph %}
+<h3><a href="https://docs.google.com/forms/d/e/1FAIpQLSfjHIJLNGnRvQVkf7yxRSiXM2O-iECK_JH11IFa9E-4PrK_qQ/viewform">アンケート回答ページ</a></h3>
+{% elif totaltime_graph and perhour_graph %}
+<h3><a href="https://docs.google.com/forms/d/e/1FAIpQLSfs9d_3OzWt1X53bDa7pO4VDOG5A1mU0Lewxhrg2sJBPDZslw/viewform">アンケート回答ページ</a></h3>
+{% elif settemp_graph %}
+<h3><a href="https://docs.google.com/forms/d/e/1FAIpQLSfOr-Z-g-jG4D0gvTL2J9KOO2NFT_TI56LiJgIcpRv5V-9Tow/viewform">アンケート回答ページ</a></h3>
+{% elif totaltime_graph %}
+<h3><a href="https://docs.google.com/forms/d/e/1FAIpQLSfGCw5q2jWXYoDU3OHmKq01k5kKeLhvdx6aSQDthEHDIqArLA/viewform">アンケート回答ページ</a></h3>
+{% elif perhour_graph %}
+<h3><a href="https://docs.google.com/forms/d/e/1FAIpQLScn_2FaWTaOndTGSP17_tgi6GD3gPdWoa33GsORveIWe8hkQA/viewform">アンケート回答ページ</a></h3>
+{% endif %}
 
 <ul class="list-group">
     {% if settemp_graph %}
@@ -23,7 +38,7 @@
                 <div class="col-md-4">
                     <div class="panel panel-default recommend">
                         <div class="panel-heading">
-                            <h3>①エアコン設定温度変更レコメンド</h3>
+                            <h3>エアコン設定温度変更レコメンド</h3>
                         </div><!-- .panel-heading -->
                         <div class="panel-body">
                             {% if is_preday_existed %}
@@ -58,7 +73,7 @@
                 <div class="col-md-4">
                     <div class="panel panel-default recommend">
                         <div class="panel-heading">
-                            <h3>②エアコン使用時間削減レコメンド</h3>
+                            <h3>エアコン使用時間削減レコメンド</h3>
                         </div><!-- .panel-heading -->
                         <div class="panel-body">
                             {% if is_preday_existed %}
@@ -85,7 +100,7 @@
                 <div class="col-md-4">
                     <div class="panel panel-default recommend">
                         <div class="panel-heading">
-                            <h3>③日中エアコン使用変更レコメンド</h3>
+                            <h3>日中エアコン使用変更レコメンド</h3>
                         </div><!-- .panel-heading -->
                         <div class="panel-body">
                             <p>冬季の日中の節電にご協力お願い致します！</p>

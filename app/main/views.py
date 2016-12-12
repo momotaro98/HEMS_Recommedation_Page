@@ -42,9 +42,14 @@ def index():
     is_deli_tu = IsTotalUsage(user).ret_pred_Y()
     is_deli_cu = IsChangeUsage(user).ret_pred_Y()
     # +++ コンテンツ判断処理 End +++
+    '''
+    # For Debug
     print('is_deli_st', is_deli_st)
     print('is_deli_tu', is_deli_tu)
     print('is_deli_cu', is_deli_cu)
+    '''
+    if not is_deli_st and not is_deli_tu and not is_deli_cu:
+        return redirect(url_for('main.no_contents'))
 
     # 基準の日にち
     # target_datetime = datetime.datetime(2016, 10, 15)
@@ -151,3 +156,7 @@ def index():
 @main.route('/notyet')
 def data_not_prepaired():
     return render_template('sorry.html')
+
+@main.route('/nocontents')
+def no_contents():
+    return render_template('no_contents.html')

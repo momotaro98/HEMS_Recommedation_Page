@@ -414,12 +414,8 @@ class IsRecommendation:
         return start_train_dt
 
     def ret_end_train_dt(self):
-        # end_train_dt = datetime.now() - timedelta(days=1)
-        '''
-        # 今のtenkishochoでは当月のデータを得られないので
-        # 得られるようにするまでは前月分までのデータ
-        '''
-        end_train_dt = datetime(2016, 11, 30, 23, 59, 59)
+        end_train_dt = datetime.now() - timedelta(days=1)
+        # end_train_dt = datetime(2016, 12, 11, 23, 59, 59)
         return end_train_dt
 
     def ret_ac_logs_list(self):
@@ -461,7 +457,8 @@ class IsSettingTemp(IsRecommendation):
         return y_pred
 
     def ret_start_train_dt(self):
-        start_train_dt = datetime(2016, 11, 16, 0, 0, 0)
+        # start_train_dt = datetime(2016, 11, 16, 0, 0, 0)
+        start_train_dt = datetime.now() - timedelta(days=20)
         return start_train_dt
 
 

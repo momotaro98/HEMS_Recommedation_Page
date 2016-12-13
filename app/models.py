@@ -413,7 +413,7 @@ class IsRecommendation:
         return start_train_dt
 
     def ret_end_train_dt(self):
-        end_train_dt = datetime.now() - timedelta(days=1)
+        end_train_dt = datetime.now() - timedelta(days=2)
         # end_train_dt = datetime(2016, 12, 11, 23, 59, 59)
         return end_train_dt
 
